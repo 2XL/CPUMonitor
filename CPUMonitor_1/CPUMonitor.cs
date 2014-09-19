@@ -43,13 +43,13 @@ namespace CPUMonitor_1
             return cpuValues;
         }
 
-        static void Main(string[] args)
+        /*static void Main(string[] args)
         {
             CPUMonitor monitor = new CPUMonitor();
             Thread t = new Thread(new ThreadStart(CPUMonitor.ThreadProc));
             t.Start();
             Thread.Sleep(12000);
             monitor.end();
-        }
+        }*/
     }
 }
