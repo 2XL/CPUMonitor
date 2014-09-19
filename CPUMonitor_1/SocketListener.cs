@@ -6,12 +6,24 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-    public class SynchronousSocketListener {
-    
-        // Incoming data from the client.
-        public static string data = null;
+namespace CPUMonitor_1
+{
+    public class SocketListener
+    {
 
-        public static void StartListening() {
+        private CPUMonitor monitor;
+        private Thread monitorThread;
+
+        public SocketListener(CPUMonitor monitor)
+        {
+            this.monitor = monitor;
+        }
+
+        // Incoming data from the client.
+        public string data = null;
+
+        public void startListening()
+        {
             // Data buffer for incoming data.
             byte[] bytes = new Byte[1024];
 
@@ -24,58 +36,81 @@ using System.Threading;
 
             // Create a TCP/IP socket.
             Socket listener = new Socket(AddressFamily.InterNetwork,
-                SocketType.Stream, ProtocolType.Tcp );
+                SocketType.Stream, ProtocolType.Tcp);
 
             // Bind the socket to the local endpoint and 
             // listen for incoming connections.
-            try {
+            try
+            {
                 listener.Bind(localEndPoint);
                 listener.Listen(10);
 
                 // Start listening for connections.
-                while (true) {
+                while (true)
+                {
                     Console.WriteLine("Waiting for a connection...");
                     // Program is suspended while waiting for an incoming connection.
                     Socket handler = listener.Accept();
                     data = null;
 
                     // An incoming connection needs to be processed.
-                    while (true) {
+                    while (true)
+                    {
                         bytes = new byte[1024];
                         int bytesRec = handler.Receive(bytes);
-                        data += Encoding.ASCII.GetString(bytes,0,bytesRec);
-                        if (data.IndexOf("<EOF>") > -1) {
+                        data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                        if (data.IndexOf("<EOF>") > -1)
+                        {
                             break;
                         }
                     }
 
                     // Show the data on the console.
-                    Console.WriteLine( "Text received : {0}", data);
+                    Console.WriteLine("Text received : {0}", data);
 
                     handler.Shutdown(SocketShutdown.Both);
                     handler.Close();
 
                     if (data == "start<EOF>")
                     {
-                        // Start monitoring CPU
+                        this.startMonitoring();
                     }
                     else if (data == "stop<EOF>")
                     {
-                        // stop monitoring CPU
+                        this.stopMonitoring();
                     }
                 }
-            
-            } catch (Exception e) {
+
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine(e.ToString());
             }
 
             Console.WriteLine("\nPress ENTER to continue...");
             Console.Read();
-        
+
         }
 
-        public static int Main(String[] args) {
-            StartListening();
+        public void startMonitoring()
+        {
+            //this.monitorThread = new Thread(new ThreadStart(CPUMonitor.ThreadProc));
+            this.monitorThread = new Thread(new ThreadStart(this.monitor.ThreadProc));
+            this.monitorThread.Start();
+        }
+
+        public void stopMonitoring()
+        {
+            this.monitor.stop();
+        }
+
+        public static int Main(String[] args)
+        {
+
+            CPUMonitor monitor = new CPUMonitor();
+            SocketListener listener = new SocketListener(monitor);
+            listener.startListening();
             return 0;
         }
     }
+}

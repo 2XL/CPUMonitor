@@ -8,17 +8,17 @@ using System.Threading;
 namespace CPUMonitor_1
 {
 
-    class CPUMonitor
+    public class CPUMonitor
     {
-        private static bool finish = false;
-        private static LinkedList<float> cpuValues = new LinkedList<float>();
+        private bool finish = false;
+        private LinkedList<float> cpuValues = new LinkedList<float>();
 
-        public static void ThreadProc()
+        public void ThreadProc()
         {
-            CPUMonitor.Start();
+            this.start();
         }
 
-        public static void Start()
+        public void start()
         {
 
             PerformanceCounter cpuCounter;
@@ -37,7 +37,7 @@ namespace CPUMonitor_1
             }
         }
 
-        public LinkedList<float> end()
+        public LinkedList<float> stop()
         {
             finish = true;
             return cpuValues;
