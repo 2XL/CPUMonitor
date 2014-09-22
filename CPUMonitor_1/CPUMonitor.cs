@@ -40,6 +40,14 @@ namespace CPUMonitor_1
         public LinkedList<float> stop()
         {
             finish = true;
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"test.txt"))
+            {
+                LinkedList<float>.Enumerator it = cpuValues.GetEnumerator();
+                while (it.MoveNext()) {
+                    file.WriteLine(it.Current);
+
+                }
+            }
             return cpuValues;
         }
 
