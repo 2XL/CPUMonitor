@@ -71,11 +71,12 @@ namespace CPUMonitor_1
                     handler.Shutdown(SocketShutdown.Both);
                     handler.Close();
 
-                    if (data == "start<EOF>")
+
+                    if (data.StartsWith("start"))
                     {
-                        this.startMonitoring();
+                        this.startMonitoring(data);
                     }
-                    else if (data == "stop<EOF>")
+                    else if (data.StartsWith("stop"))
                     {
                         this.stopMonitoring();
                     }
@@ -92,9 +93,15 @@ namespace CPUMonitor_1
 
         }
 
-        public void startMonitoring()
+        public void startMonitoring(string command)
         {
             //this.monitorThread = new Thread(new ThreadStart(CPUMonitor.ThreadProc));
+            command = command.Replace("<EOF>", "");
+            string[] parameters = command.Split(' ');
+            int interval = Convert.ToInt32(parameters[1]);
+            string filename = parameters[2];
+            monitor.setInterval(interval);
+            monitor.setFilename(filename);
             this.monitorThread = new Thread(new ThreadStart(this.monitor.ThreadProc));
             this.monitorThread.Start();
         }

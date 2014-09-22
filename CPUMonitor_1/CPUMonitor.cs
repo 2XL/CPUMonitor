@@ -12,6 +12,8 @@ namespace CPUMonitor_1
     {
         private bool finish = false;
         private LinkedList<float> cpuValues = new LinkedList<float>();
+        private int interval;
+        private string filename;
 
         public void ThreadProc()
         {
@@ -20,6 +22,7 @@ namespace CPUMonitor_1
 
         public void start()
         {
+            finish = false;
 
             PerformanceCounter cpuCounter;
             cpuCounter = new PerformanceCounter();
@@ -30,7 +33,7 @@ namespace CPUMonitor_1
 
             while (!finish)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(this.interval);
                 float cpu = cpuCounter.NextValue();
                 cpuValues.AddLast(cpu);
                 Console.WriteLine(cpu);
@@ -40,7 +43,7 @@ namespace CPUMonitor_1
         public LinkedList<float> stop()
         {
             finish = true;
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"test.txt"))
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(this.filename))
             {
                 LinkedList<float>.Enumerator it = cpuValues.GetEnumerator();
                 while (it.MoveNext()) {
@@ -49,6 +52,16 @@ namespace CPUMonitor_1
                 }
             }
             return cpuValues;
+        }
+
+        public void setInterval(int interval)
+        {
+            this.interval = interval;
+        }
+
+        public void setFilename(string filename)
+        {
+            this.filename = filename;
         }
 
         /*static void Main(string[] args)
