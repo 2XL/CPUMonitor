@@ -11,7 +11,7 @@ namespace CPUMonitor_1
     public class CPUMonitor
     {
         private bool finish = false;
-        private LinkedList<float> cpuValues = new LinkedList<float>();
+        private LinkedList<float> cpuValues;
         private int interval;
         private string filename;
 
@@ -23,6 +23,7 @@ namespace CPUMonitor_1
         public void start()
         {
             finish = false;
+            cpuValues = new LinkedList<float>();
 
             PerformanceCounter cpuCounter;
             cpuCounter = new PerformanceCounter();
