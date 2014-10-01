@@ -14,6 +14,7 @@ namespace CPUMonitor_1
         private LinkedList<float> cpuValues;
         private int interval;
         private string filename;
+        private string process;
 
         public void ThreadProc()
         {
@@ -26,11 +27,7 @@ namespace CPUMonitor_1
             cpuValues = new LinkedList<float>();
 
             PerformanceCounter cpuCounter;
-            cpuCounter = new PerformanceCounter();
-
-            cpuCounter.CategoryName = "Processor";
-            cpuCounter.CounterName = "% Processor Time";
-            cpuCounter.InstanceName = "_Total";
+            cpuCounter = new PerformanceCounter("Process", "% Processor Time", process);
 
             while (!finish)
             {
@@ -63,6 +60,11 @@ namespace CPUMonitor_1
         public void setFilename(string filename)
         {
             this.filename = filename;
+        }
+
+        public void setProcess(string process)
+        {
+            this.process = process;
         }
 
         /*static void Main(string[] args)
