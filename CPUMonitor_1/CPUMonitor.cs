@@ -14,7 +14,7 @@ namespace CPUMonitor_1
         private LinkedList<float> cpuValues;
         private int interval;
         private string filename;
-        private string process;
+        private LinkedList<string> processes;
 
         public void ThreadProc()
         {
@@ -26,13 +26,19 @@ namespace CPUMonitor_1
             finish = false;
             cpuValues = new LinkedList<float>();
 
-            PerformanceCounter cpuCounter;
-            cpuCounter = new PerformanceCounter("Process", "% Processor Time", process);
+            LinkedList<PerformanceCounter> cpuCounter = new LinkedList<PerformanceCounter>();
+            foreach (string process in processes) {
+                cpuCounter.AddLast(new PerformanceCounter("Process", "% Processor Time", process));
+            }
+            //cpuCounter = new PerformanceCounter("Process", "% Processor Time", process);
 
             while (!finish)
             {
                 Thread.Sleep(this.interval);
-                float cpu = cpuCounter.NextValue();
+                float cpu = 0;
+                foreach (PerformanceCounter counter in cpuCounter) {
+                    cpu += counter.NextValue();
+                }
                 cpuValues.AddLast(cpu);
                 Console.WriteLine(cpu);
             }
@@ -62,9 +68,9 @@ namespace CPUMonitor_1
             this.filename = filename;
         }
 
-        public void setProcess(string process)
+        public void setProcess(LinkedList<string> processes)
         {
-            this.process = process;
+            this.processes = processes;
         }
 
         /*static void Main(string[] args)

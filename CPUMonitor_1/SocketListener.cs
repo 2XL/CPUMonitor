@@ -100,10 +100,14 @@ namespace CPUMonitor_1
             string[] parameters = command.Split(' ');
             int interval = Convert.ToInt32(parameters[1]);
             string filename = parameters[2];
-            string process = parameters[3];
+            LinkedList<string> processes = new LinkedList<string>();
+            for (int i = 3; i < parameters.Length; i++ )
+            {
+                processes.AddLast(parameters[i]);
+            }
             monitor.setInterval(interval);
             monitor.setFilename(filename);
-            monitor.setProcess(process);
+            monitor.setProcess(processes);
             this.monitorThread = new Thread(new ThreadStart(this.monitor.ThreadProc));
             this.monitorThread.Start();
         }
