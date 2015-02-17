@@ -8,46 +8,40 @@ using System.Threading;
 namespace CPUMonitor_1
 {
 
-    public class CPUMonitor
+    public class CPUMonitor : MonitorResource
     {
-        private bool finish = false;
         private LinkedList<float> cpuValues;
-        private int interval;
-        private string filename;
         private LinkedList<string> processes;
+        LinkedList<PerformanceCounter> cpuCounter;
 
-        public void ThreadProc()
+        public CPUMonitor(LinkedList<string> processes)
         {
-            this.start();
+            this.cpuCounter = new LinkedList<PerformanceCounter>();
+            this.processes = processes;
         }
 
-        public void start()
+        public void prepareMonitoring()
         {
-            finish = false;
-            cpuValues = new LinkedList<float>();
-
+            this.cpuValues = new LinkedList<float>();
             LinkedList<PerformanceCounter> cpuCounter = new LinkedList<PerformanceCounter>();
-            foreach (string process in processes) {
+            foreach (string process in processes)
+            {
                 cpuCounter.AddLast(new PerformanceCounter("Process", "% Processor Time", process));
             }
-            //cpuCounter = new PerformanceCounter("Process", "% Processor Time", process);
-
-            while (!finish)
-            {
-                Thread.Sleep(this.interval);
-                float cpu = 0;
-                foreach (PerformanceCounter counter in cpuCounter) {
-                    cpu += counter.NextValue();
-                }
-                cpuValues.AddLast(cpu);
-                Console.WriteLine(cpu);
-            }
         }
 
-        public LinkedList<float> stop()
+        public void captureValue()
         {
-            finish = true;
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(this.filename))
+            float cpu = 0;
+            foreach (PerformanceCounter counter in cpuCounter) {
+                cpu += counter.NextValue();
+            }
+            cpuValues.AddLast(cpu);
+        }
+
+        public void saveResults(string filename)
+        {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("cpu_" + filename))
             {
                 LinkedList<float>.Enumerator it = cpuValues.GetEnumerator();
                 while (it.MoveNext()) {
@@ -55,17 +49,6 @@ namespace CPUMonitor_1
 
                 }
             }
-            return cpuValues;
-        }
-
-        public void setInterval(int interval)
-        {
-            this.interval = interval;
-        }
-
-        public void setFilename(string filename)
-        {
-            this.filename = filename;
         }
 
         public void setProcess(LinkedList<string> processes)

@@ -11,10 +11,10 @@ namespace CPUMonitor_1
     public class SocketListener
     {
 
-        private CPUMonitor monitor;
+        private Monitor monitor;
         private Thread monitorThread;
 
-        public SocketListener(CPUMonitor monitor)
+        public SocketListener(Monitor monitor)
         {
             this.monitor = monitor;
         }
@@ -108,6 +108,7 @@ namespace CPUMonitor_1
             monitor.setInterval(interval);
             monitor.setFilename(filename);
             monitor.setProcess(processes);
+            monitor.prepareMonitoring();
             this.monitorThread = new Thread(new ThreadStart(this.monitor.ThreadProc));
             this.monitorThread.Start();
         }
@@ -120,7 +121,7 @@ namespace CPUMonitor_1
         public static int Main(String[] args)
         {
 
-            CPUMonitor monitor = new CPUMonitor();
+            Monitor monitor = new Monitor();
             SocketListener listener = new SocketListener(monitor);
             listener.startListening();
             return 0;
