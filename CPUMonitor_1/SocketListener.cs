@@ -109,8 +109,8 @@ namespace CPUMonitor_1
             monitor.setFilename(filename);
             monitor.setProcess(processes);
             monitor.prepareMonitoring();
-            this.monitorThread = new Thread(new ThreadStart(this.monitor.ThreadProc));
-            this.monitorThread.Start();
+            this.monitorThread = new Thread(new ThreadStart(this.monitor.ThreadProc)); #
+            this.monitorThread.Start(); #
         }
 
         public void stopMonitoring()
